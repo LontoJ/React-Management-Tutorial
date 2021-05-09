@@ -7,6 +7,7 @@ import {
   TableRow,
   withStyles,
 } from '@material-ui/core';
+import { useEffect, useState } from 'react';
 import './App.css';
 import Customer from './components/Customer';
 
@@ -21,34 +22,21 @@ const styles = (theme) => ({
   },
 });
 
-const customers = [
-  {
-    id: 1,
-    image: 'https://placeimg.com/64/64/1',
-    name: '나동빈',
-    birthday: '961222',
-    gender: '남자',
-    job: '대학생',
-  },
-  {
-    id: 2,
-    image: 'https://placeimg.com/64/64/2',
-    name: '홍길동',
-    birthday: '661112',
-    gender: '여자',
-    job: '공무원',
-  },
-  {
-    id: 3,
-    image: 'https://placeimg.com/64/64/3',
-    name: '이순신',
-    birthday: '760427',
-    gender: '남자',
-    job: '군인',
-  },
-];
-
 function App(props) {
+  const [customers, setCustomers] = useState('');
+
+  useEffect(() => {
+    callApi()
+      .then((res) => setCustomers(res))
+      .catch((error) => console.log(error));
+  }, []);
+
+  const callApi = async () => {
+    const response = await fetch('/api/customers');
+    const body = await response.json();
+    return body;
+  };
+
   const { classes } = props;
 
   return (
@@ -65,19 +53,21 @@ function App(props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {customers.map((c) => {
-            return (
-              <Customer
-                key={c.id}
-                id={c.id}
-                image={c.image}
-                name={c.name}
-                birthday={c.birthday}
-                gender={c.gender}
-                job={c.job}
-              />
-            );
-          })}
+          {customers
+            ? customers.map((c) => {
+                return (
+                  <Customer
+                    key={c.id}
+                    id={c.id}
+                    image={c.image}
+                    name={c.name}
+                    birthday={c.birthday}
+                    gender={c.gender}
+                    job={c.job}
+                  />
+                );
+              })
+            : ''}
         </TableBody>
       </Table>
     </Paper>
